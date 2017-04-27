@@ -2,7 +2,7 @@
   "name": "bk9xxx_modbus_tcp",
   "version": "0.0.1",
   "description": "Modbus TCP interface for Beckhoff Automation Ethernet bus couplers (e.g. BK9000, BK9050, BK9100).",
-  "main": "bk9xxx.js",
+  "main": "init.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sebsonf/bk9xxx_modbus_tcp.git"
@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/sebsonf/bk9xxx_modbus_tcp/issues"
   },
-  "homepage": "https://github.com/sebsonf/bk9xxx_modbus_tcp#readme"
+  "homepage": "https://github.com/sebsonf/bk9xxx_modbus_tcp#readme",
+  "dependencies": {
+    "arpscan": "^0.5.0",
+    "grunt-cli": "^1.2.0",
+    "modbus-serial": "^5.2.6"
+  }
 }

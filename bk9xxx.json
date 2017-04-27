@@ -1,0 +1,77 @@
+{
+    "numAnalogInputs":     {
+        "registers":    {
+            "startAddress": "0x1011",
+            "noRegisters":   1,
+            "access":   "read"
+        },
+        "ioBitCount": 32,
+        "name": "analog inputs"
+    },
+    "numAnalogOutputs":    {
+        "registers":    {
+            "startAddress": "0x1010",
+            "noRegisters":   1,
+            "access":   "read"
+        },
+        "ioBitCount": 32,
+        "name": "analog outputs"     
+    },
+    "numDigitalInputs":    {
+        "registers":    {
+            "startAddress": "0x1013",
+            "noRegisters":   1,
+            "access":   "read"
+        },
+        "ioBitCount": 1,
+        "name": "digital inputs"
+    },
+    "numDigitalOutputs":   {
+        "registers":    {
+            "startAddress": "0x1012",
+            "noRegisters":   1,
+            "access":   "read"
+        },
+        "ioBitCount": 1,
+        "name": "digital outputs"      
+    },
+    "identifier":   {
+        "registers":    {
+            "startAddress": "0x1000",
+            "noRegisters":   3,
+            "access":   "read"
+        }
+    },
+    "watchdogTimeout":  {
+        "registers":    {
+            "startAddress": "0x1120",
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "watchdogReset":    {
+        "registers":    {
+            "startAddress": "0x1121",
+            "noRegisters":   1,
+            "access":   "readwrite"
+        },
+        "Sequence1":    "0xBECF",
+        "Sequence2":    "0xAFFE"
+    },
+    "watchdogCurrentTime":  {
+        "registers":    {
+            "startAddress": "0x1020",
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "watchdogType": {
+        "registers":{
+            "startAddress": "0x1122",
+            "noRegisters":   1,
+            "access":   "readwrite"            
+        },
+        "triggerOnReceive": 1,
+        "triggerOnWrite":   0
+    }
+}

@@ -1,5 +1,5 @@
-var bk9xxxConfig = require('./bk9xxx.json');
-var kl3208Config = require('./kl3208.json');
+var bk9xxxConfig = require('../ressources/bk9xxx.json');
+var kl3208Config = require('../ressources/kl3208.json');
 
 const REG_ACCESS    = 0x80;
 const READ_ACCESS   = 0;

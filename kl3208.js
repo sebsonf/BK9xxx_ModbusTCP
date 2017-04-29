@@ -1,5 +1,5 @@
-var registercom = require('./registercom.js');
-var kl3208Config = require('./kl3208.json');
+var registercom = require('./utils/registercom.js');
+var kl3208Config = require('./ressources/kl3208.json');
 
 const ERR_INPUT_OVERRANGE   = 0x02;
 const ERR_INPUT_UNDERRANGE  = 0x01;

@@ -1,7 +1,7 @@
 var ModbusRTU = require("modbus-serial");
 var watchdog = require("./watchdog.js");
 var processImage = require("./processimage.js");
-var bk9xxxConfig = require('./bk9xxx.json');
+var bk9xxxConfig = require('./ressources/bk9xxx.json');
 
 // Bus coupler status error flags
 const ERR_WATCHDOG_EXPIRED      = 0x8000;

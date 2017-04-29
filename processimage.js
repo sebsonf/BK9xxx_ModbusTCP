@@ -1,7 +1,7 @@
 var numIOs = require('./numios.js');
-var registercom = require('./registercom.js');
+var registercom = require('./utils/registercom.js');
 var kl3208Channel = require('./kl3208.js');
-var kl3208Config = require('./kl3208.json');
+var kl3208Config = require('./ressources/kl3208.json');
 
 var processImage = function(client, config) {
     this._client = client;

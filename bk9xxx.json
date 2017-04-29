@@ -1,4 +1,25 @@
 {
+    "BusCouplerStatus": {
+        "registers":    {
+            "startAddress": "0x100C",
+            "noRegisters":   1,
+            "access":   "read"             
+        }
+    },
+    "processInputImage": {
+        "registers":{
+            "startAddress": 0,
+            "noRegisters":   256,
+            "access":   "read"            
+        }
+    },
+    "processOutputImage": {
+        "registers":{
+            "startAddress": 2048,
+            "noRegisters":   256,
+            "access":   "read"            
+        }
+    },    
     "numAnalogInputs":     {
         "registers":    {
             "startAddress": "0x1011",

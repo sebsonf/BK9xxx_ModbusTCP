@@ -33,14 +33,14 @@ watchdog.prototype.reset = async function() {
     console.log("Watchdog: timer is now reset.");
 }
 
-// set watchdog to trigger on receiving telegrams (default)
+// set watchdog trigger on receiving telegrams (default)
 watchdog.prototype.triggerOnReceive = async function() {
     await this._modbusClient.writeRegister(this._typeParams.registers.startAddress, 
                                            this._typeParams.triggerOnReceive);
     console.log("Watchdog: timer is now set to trigger on receiving telegrams.");
 }
 
-// set watchdog to trigger on write telegrams
+// set watchdog trigger on write telegrams
 watchdog.prototype.triggerOnWrite = async function() {
     await this._modbusClient.writeRegister(this._typeParams.registers.startAddress, 
                                            this._typeParams.triggerOnWrite);

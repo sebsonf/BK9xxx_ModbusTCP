@@ -1,0 +1,27 @@
+{
+    "writeProtection":     {
+        "registers":    {
+            "startAddress": "0x1011",
+            "noRegisters":   1,
+            "access":   "read"
+        },
+        "ioBitCount": 32,
+        "name": "analog inputs",
+        "codeEnable":   "0",
+        "codeDisable":  "0x1235"
+    },
+    "busTerminalType":  {
+        "registers":    {
+            "startAddress": 8,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "busTerminalTypeExtension":  {
+        "registers":    {
+            "startAddress": 29,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    }    
+}

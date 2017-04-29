@@ -23,5 +23,100 @@
             "noRegisters":   1,
             "access":   "read"
         }
-    }    
+    },
+    "ADRawValue":  {
+        "description":  "Raw AD value",
+        "registers":    {
+            "startAddress": 0,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "ADLineResRawValue":  {
+        "description":  "Raw AD with line resistance value",
+        "registers":    {
+            "startAddress": 1,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "terminalDiagnose":  {
+        "description":  "Bus terminal diagnose",
+        "registers":    {
+            "startAddress": 6,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "firmwareVersion":  {
+        "description":  "Bus terminal firmware version",
+        "registers":    {
+            "startAddress": 9,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "hardwareVersion":  {
+        "description":  "Bus terminal hardware version",
+        "registers":    {
+            "startAddress": 16,
+            "noRegisters":   1,
+            "access":   "read"
+        }
+    },
+    "manufacturerAdjOffset":  {
+        "description":  "Manufacturer adjustment offset",
+        "registers":    {
+            "startAddress": 17,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "manufacturerAdjGain":  {
+        "description":  "Manufacturer adjustment gain",
+        "registers":    {
+            "startAddress": 18,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "manufacturerScalingOffset":  {
+        "description":  "Manufacturer scaling offset",
+        "registers":    {
+            "startAddress": 19,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "manufacturerScalingGain":  {
+        "description":  "Manufacturer scaling gain",
+        "registers":    {
+            "startAddress": 20,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "manufacturerCalibOffset":  {
+        "description":  "Manufacturer calibration offset",
+        "registers":    {
+            "startAddress": 23,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "manufacturerCalibGain":  {
+        "description":  "Manufacturer calibration gain",
+        "registers":    {
+            "startAddress": 24,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    },
+    "sensorType":  {
+        "registers":    {
+            "startAddress": 39,
+            "noRegisters":   1,
+            "access":   "readwrite"
+        }
+    }
 }

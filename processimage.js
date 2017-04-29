@@ -7,10 +7,10 @@ var processImage = function(client, config) {
     this._client = client;
     this._config = config;
 
-    this.analogInputs       = new analogInputs(     this._client, this._config.numAnalogInputs);
-    this.analogOutputs      = new analogOutputs(    this._client, this._config.numAnalogOutputs);
-    this.digitalInputs      = new digitalInputs(    this._client, this._config.numDigitalInputs);
-    this.digitalOutputs     = new digitalOutputs(   this._client, this._config.numDigitalOutputs);
+    this.analogInputs   = new analogInputs(   this._client, this._config.numAnalogInputs );
+    this.analogOutputs  = new analogOutputs(  this._client, this._config.numAnalogOutputs );
+    this.digitalInputs  = new digitalInputs(  this._client, this._config.numDigitalInputs );
+    this.digitalOutputs = new digitalOutputs( this._client, this._config.numDigitalOutputs );
 };
 
 processImage.prototype.init = async function() {
@@ -31,20 +31,6 @@ var analogInputs = function(client, config){
     this.numChannels = undefined;
 
     this.channels = [];
-
-    this.init = async function(){
-        this.numChannels = await this.count;
-
-        for(let i=1; i<=this.numChannels; i++){
-            let busTerminalType = await this.getBusTerminalType(i);
-            if( busTerminalType[0] === 3208 ){
-                console.log(`Analog input ${i}: Found input channel of bus terminal KL${busTerminalType[0]}-${busTerminalType[1]}.`);
-                this.channels.push( new kl3208Channel( this._client, i ) );
-                await this.channels[i-1].init();
-            }
-        }
-    };
-
     this.getBusTerminalType = async function(inputNum){
         let resp = await registercom.readTerminalRegister( this._client, inputNum, 
                                                     kl3208Config.busTerminalType.registers.startAddress );
@@ -55,9 +41,36 @@ var analogInputs = function(client, config){
 
     };
 
+    this.loop = async function(){
+        let ADvalues = [];
+
+        for (let channel in this.channels) {
+            ADvalues.push( await this.channels[channel].ADRawValue.value );
+        }
+
+        console.log(ADvalues);
+    };    
+
     Object.defineProperty(this, 'count', {
         get: async function() { return await this._count.get(); }
     });
+};
+
+analogInputs.prototype.init = async function(){
+    this.numChannels = await this.count;
+
+    for(let i=1; i<=this.numChannels; i++){
+        let busTerminalType = await this.getBusTerminalType(i);
+        if( busTerminalType[0] === 3208 ){
+            console.log(`Analog input ${i}: Found input channel of bus terminal KL${busTerminalType[0]}-${busTerminalType[1]}.`);
+            this.channels.push( new kl3208Channel( this._client, i ) );
+            await this.channels[i-1].init();
+        }
+    }
+
+    setInterval( (async function(){
+        await this.loop();
+    }).bind(this), 1000);
 };
 
 var analogOutputs = function(client, config){

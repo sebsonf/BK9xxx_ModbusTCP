@@ -29,7 +29,7 @@ exports.readStatusRegister = async function( modbusClient, inputNum ){
     return await modbusClient.readHoldingRegisters( statusRegisterAddress(inputNum), 1 );
 };
 
-exports.writeTerminalRegister = async function( modbusClient, inputNum, regAddress, regValue ){
+var writeTerminalRegister = exports.writeTerminalRegister = async function( modbusClient, inputNum, regAddress, regValue ){
     // switch from process data to register communication mode
     // disable write protection
     let controlByte = REG_ACCESS | WRITE_ACCESS | kl3208Config.writeProtection.registers.startAddress;
@@ -49,7 +49,7 @@ exports.writeTerminalRegister = async function( modbusClient, inputNum, regAddre
     await writeControlRegister( modbusClient, inputNum, 0 );
 };
 
-exports.readTerminalRegister = async function( modbusClient, inputNum, regAddress ){
+var readTerminalRegister = exports.readTerminalRegister = async function( modbusClient, inputNum, regAddress ){
     let controlByte = REG_ACCESS | READ_ACCESS | regAddress;
     await writeControlRegister( modbusClient, inputNum, controlByte );
     return await modbusClient.readHoldingRegisters( inputDataAddress( inputNum ), 1 );
@@ -69,4 +69,45 @@ exports.enableWriteProtection = async function( modbusClient, inputNum ){
     await modbusClient.writeRegister( outputDataAddress(inputNum), 
                                       kl3208Config.writeProtection.codeEnable );
     await writeControlRegister( modbusClient, inputNum, 0 );
+};
+
+var readonlyRegister = exports.readonlyRegister = function( modbusClient, inputNum, params ) {
+    this._value = undefined;
+    this._client = modbusClient;
+    this._inputNum = inputNum;
+    this._params = params;
+
+    Object.defineProperty(this, 'value', {
+        get: async function() { 
+            await this.fetch(); 
+            return this._value;
+        }
+    });
+};
+
+readonlyRegister.prototype.fetch = async function() {
+    console.log(`Analog Input ${this._inputNum}: Reading ${this._params.description}.`);
+    let resp = await readTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress );
+    this._value = resp.data[0];
+};
+
+var readWriteRegister = exports.readWriteRegister = function( modbusClient, inputNum, params ) {
+    this._value = undefined;
+    this._client = modbusClient;
+    this._inputNum = inputNum;
+    this._params = params;
+
+    Object.setPrototypeOf(this, readonlyRegister);
+
+    Object.defineProperty(this, 'value', {
+        set: async function(val) { 
+            await this.fetch(); 
+            return this._value;
+        }
+    });
+};
+
+readWriteRegister.prototype.write = async function(value) {
+    console.log(`Analog Input ${this._inputNum}: Setting ${this._params.description} to ${value}.`);
+    await writeTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress, value );
 };

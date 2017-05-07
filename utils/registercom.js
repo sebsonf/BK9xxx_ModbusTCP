@@ -71,43 +71,55 @@ exports.enableWriteProtection = async function( modbusClient, inputNum ){
     await writeControlRegister( modbusClient, inputNum, 0 );
 };
 
-var readonlyRegister = exports.readonlyRegister = function( modbusClient, inputNum, params ) {
-    this._value = undefined;
-    this._client = modbusClient;
-    this._inputNum = inputNum;
-    this._params = params;
+var readonlyRegister = exports.readonlyRegister = class readonlyRegister {
+    constructor( modbusClient, inputNum, params ) {
+        this._value = undefined;
+        this._client = modbusClient;
+        this._inputNum = inputNum;
+        this._params = params;
 
-    Object.defineProperty(this, 'value', {
-        get: async function() { 
-            await this.fetch(); 
-            return this._value;
-        }
-    });
+        Object.defineProperty(this, 'value', {
+            get: async function() { 
+                await this.fetch(); 
+                return this._value;
+            }
+        });
+    }
+
+    async fetch() {
+        console.log(`Analog Input ${this._inputNum}: Reading ${this._params.description}.`);
+        let resp = await readTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress );
+        this._value = resp.data[0];
+    };
 };
 
-readonlyRegister.prototype.fetch = async function() {
-    console.log(`Analog Input ${this._inputNum}: Reading ${this._params.description}.`);
-    let resp = await readTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress );
-    this._value = resp.data[0];
-};
+var readWriteRegister = exports.readWriteRegister = class readWriteRegister{
+    constructor( modbusClient, inputNum, params ) {
+        this._value = undefined;
+        this._client = modbusClient;
+        this._inputNum = inputNum;
+        this._params = params;
 
-var readWriteRegister = exports.readWriteRegister = function( modbusClient, inputNum, params ) {
-    this._value = undefined;
-    this._client = modbusClient;
-    this._inputNum = inputNum;
-    this._params = params;
+        Object.defineProperty(this, 'value', {
+            get: async function() { 
+                await this.fetch(); 
+                return this._value;
+            },
+            set: async function(val) {
+                this._value = val; 
+                await this.write(this._value); 
+            }
+        });
+    }
 
-    Object.setPrototypeOf(this, readonlyRegister);
+    async fetch() {
+        console.log(`Analog Input ${this._inputNum}: Reading ${this._params.description}.`);
+        let resp = await readTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress );
+        this._value = resp.data[0];
+    };
 
-    Object.defineProperty(this, 'value', {
-        set: async function(val) { 
-            await this.fetch(); 
-            return this._value;
-        }
-    });
-};
-
-readWriteRegister.prototype.write = async function(value) {
-    console.log(`Analog Input ${this._inputNum}: Setting ${this._params.description} to ${value}.`);
-    await writeTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress, value );
+    async write(value) {
+        console.log(`Analog Input ${this._inputNum}: Setting ${this._params.description} to ${value}.`);
+        await writeTerminalRegister( this._client, this._inputNum, this._params.registers.startAddress, value );
+    };    
 };

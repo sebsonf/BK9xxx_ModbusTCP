@@ -8,14 +8,31 @@ const ERR_WATCHDOG_EXPIRED      = 0x8000;
 const ERR_BUS_COUPLER_CONFIG    = 0x0002;
 const ERR_BUS_TERMINAL          = 0x0001;
 
-var BK9xxx = async function (ip) {
-    this._ip = ip;
-    this._port = 502;
-    this.client = new ModbusRTU();
-    this._ID = undefined;
+module.exports = class BK9xxx extends ModbusRTU {
+    constructor( ip ){
+        super();
+        this._ip    = ip;
+        this._port  = 502;
+        this._id    = undefined;
+    }
     
     // initialization routine
-    this.init = async function () {
+    async init () {
+        // open connection using device IP and default Modbus TCP port 502
+        // on success invoke initialization routine
+        console.log(`Establishing connection using TCP socket ${this._ip}:502.`);
+        await this.connectTCP(this._ip);
+
+        //---------------------------------------------------------------------------#
+        // WATCHDOG
+        //---------------------------------------------------------------------------#
+        this.watchdog = new watchdog( this, bk9xxxConfig );
+
+        //---------------------------------------------------------------------------#
+        // PROCESS IMAGE
+        //---------------------------------------------------------------------------#
+        this.processImage = new processImage( this, bk9xxxConfig );
+
         try {
             // get bus coupler ID
             await this.fetchBusCouplerID();
@@ -30,37 +47,22 @@ var BK9xxx = async function (ip) {
             await this.processImage.init();
         }
         catch (error) {
-            // Prints "Caught Woops!"
+            // print error
             console.error('Caught', error.message);
         }
     };
 
-    // open connection using device IP and default Modbus TCP port 502
-    // on success invoke initialization routine
-    console.log(`Establishing connection using TCP socket ${this._ip}:502.`);
-    this.client.connectTCP( this._ip, this.init );
-
-    //---------------------------------------------------------------------------#
-    // WATCHDOG
-    //---------------------------------------------------------------------------#
-    this.watchdog = new watchdog( this.client, bk9xxxConfig );
-
-    //---------------------------------------------------------------------------#
-    // PROCESS IMAGE
-    //---------------------------------------------------------------------------#
-    this.processImage = new processImage( this.client, bk9xxxConfig );
-
-    this.fetchBusCouplerID = async function () {
-        let id = await this.client.readHoldingRegisters( bk9xxxConfig.identifier.registers.startAddress, 
-                                                         bk9xxxConfig.identifier.registers.noRegisters );
-        this._ID = id.buffer.toString('hex').toUpperCase();
-        console.log(`Device bus coupler ID: ${this._ID}`);
+    async fetchBusCouplerID () {
+        let id = await this.readHoldingRegisters( bk9xxxConfig.identifier.registers.startAddress, 
+                                                  bk9xxxConfig.identifier.registers.noRegisters );
+        this._id = id.buffer.toString('hex').toUpperCase();
+        console.log(`Device bus coupler ID: ${this._id}`);
     };
 
-    this.fetchBusCouplerStatus = async function () {
+    async fetchBusCouplerStatus () {
         let status = 
-            await this.client.readHoldingRegisters( bk9xxxConfig.BusCouplerStatus.registers.startAddress, 
-                                                    bk9xxxConfig.BusCouplerStatus.registers.noRegisters );
+            await this.readHoldingRegisters( bk9xxxConfig.BusCouplerStatus.registers.startAddress, 
+                                             bk9xxxConfig.BusCouplerStatus.registers.noRegisters );
         if( status.data[0] === 0){
             console.log("Bus coupler status: no errors.");
         } else {
@@ -76,5 +78,3 @@ var BK9xxx = async function (ip) {
         }
     };
 };
-
-module.exports = BK9xxx;

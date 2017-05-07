@@ -7,6 +7,8 @@ var arpOptions = {
     interface: 'eth0'
 };
 
+var ModbusDevices = [];
+
 // parse ARP table and start ModbusTCP instances
 arpscanner(arpOptions)
     .then( deviceList => {
@@ -19,26 +21,20 @@ arpscanner(arpOptions)
             process.exit(1); // exit with failure
         }
 
-        var ModbusDevices = [];
-        // create instances of ModbusTCP devices
-        validDevices.forEach( device => {
-            console.log(`Found Beckhoff Automation device with IP address ${device.ip} and MAC address ${device.mac}.`);
-            ModbusDevices.push( BK9xxx(device.ip) );
-        }) 
+        // create ModbusTCP device instances
+        for (let deviceIndex in validDevices) {
+            console.log(`Found Beckhoff Automation device with IP address ${validDevices[deviceIndex].ip} and MAC address ${validDevices[deviceIndex].mac}.`);
+            let ModbusDevice = new BK9xxx( validDevices[deviceIndex].ip );
+            ModbusDevice.init().then(function() {
+                ModbusDevices.push( ModbusDevice );
+                console.log(Object.keys(ModbusDevice));
+            });
+        }        
     })
     .catch( err => {
         console.error(err);
         process.exit(1); // exit with failure
     })
-
-var definitions = {
-    "ADR_BUS_TERMINAL_DIAG_R": 0x100B,
-    "ADR_BUS_COUPLER_STATUS_R": 0x100C,
-    "ADR_BUS_TERMINAL_DIAG_RW": 0x110B,
-    "BUS_TERMINAL_ERR": 0x0001,
-    "BUS_COUPLER_CONFIG_ERR": 0x0002,
-    "WATCHDOG_EXPIRED_ERR": 0x8000
-};
 
 /*class measurementEntity{
     constructor(name, unit, measurementFunction, conversionFunction){

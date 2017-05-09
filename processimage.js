@@ -1,4 +1,3 @@
-var numIOs = require('./numios.js');
 var registercom = require('./utils/registercom.js');
 var kl3208Channel = require('./kl3208.js');
 var kl3208Config = require('./ressources/kl3208.json');
@@ -27,16 +26,48 @@ module.exports = class processImage {
     };
 }; 
 
-class analogInputs {
+class numIOs {
+    constructor( modbusClient, params ) {
+        this._modbusClient      = modbusClient;    
+        this._noChannels        = undefined;
+        this._startAddress      = params.registers.startAddress;
+        this._noRegisters       = params.registers.noRegisters;
+        this._ioBitCount        = params.ioBitCount;
+        this._ioTypeStr         = params.name;
+    }
+
+    async fetch() { 
+        try {
+            let registerResult = await this._modbusClient.readInputRegisters(this._startAddress, this._noRegisters);
+            this._noChannels = registerResult.data / this._ioBitCount;
+            console.log(`Found ${this._noChannels} ${this._ioTypeStr}.`);
+        } catch (error) {
+            console.error('Caught', error.message);
+        }
+    };
+
+    async get() {
+        await this.fetch();
+        return this._noChannels;
+    };
+};
+
+class inOuts {
     constructor(client, config){
-        this._client = client;
         this._count = new numIOs(client, config);
-        this.numChannels = undefined;
-        this.channels = [];
 
         Object.defineProperty(this, 'count', {
             get: async function() { return await this._count.get(); }
         });
+    }
+};
+
+class analogInputs extends inOuts {
+    constructor(client, config){
+        super(client, config);
+        this._client = client;
+        this.numChannels = undefined;
+        this.channels = [];
     }
 
     async getBusTerminalType(inputNum){
@@ -77,32 +108,20 @@ class analogInputs {
     };
 };
 
-class analogOutputs {
+class analogOutputs extends inOuts {
     constructor(client, config){
-        this._count = new numIOs(client, config);
-
-        Object.defineProperty(this, 'count', {
-            get: async function() { return await this._count.get(); }
-        });
+        super(client, config);
     }
 };
 
-class digitalInputs {
+class digitalInputs extends inOuts {
     constructor(client, config){
-        this._count = new numIOs(client, config);
-
-        Object.defineProperty(this, 'count', {
-            get: async function() { return await this._count.get(); }
-        });
+        super(client, config);
     }
 }; 
 
-class digitalOutputs {
+class digitalOutputs extends inOuts {
     constructor(client, config){
-        this._count = new numIOs(client, config);
-
-        Object.defineProperty(this, 'count', {
-            get: async function() { return await this._count.get(); }
-        });
+        super(client, config);
     }
 }; 

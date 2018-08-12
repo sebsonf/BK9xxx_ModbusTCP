@@ -46,6 +46,11 @@ RTD_NTC100K      = 0x00C8
 RTD_NTC_CUSTOM   = 0x00FF
 RTD_DEFAULT_NONE = 0x0000
 
+A1 = 1.12119e-3
+B1 = 2.35346e-4
+C1 = 0
+D1 = 8.34620e-8
+
 def sensor_type_string(sensor_type_num):
     return {
         RTD_NTC1K8:         'RTD_NTC1K8',
